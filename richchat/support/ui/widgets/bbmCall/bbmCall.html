@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+
+<!--
+ Copyright (c) 2019 BlackBerry.  All Rights Reserved.
+
+ You must obtain a license from and pay any applicable license fees to
+ BlackBerry before you may reproduce, modify or distribute this
+ software, or any work that includes all or part of this software.
+
+ This file may contain contributions from others. Please review this entire
+ file for other proprietary rights or license notices.
+-->
+<html>
+  <link rel="import" href="../@npm-polymer/polymer/polymer.html">
+  <dom-module id="bbm-call">
+    <template>
+      <style>
+        :host {
+          display: flex;
+          flex-direction: column;
+          position: absolute;
+          height: 300px;
+          width: 400px;
+          left: calc(100% - 420px);
+          left: -webkit-calc(100% - 420px);
+          top: 100px;
+          background: #087099;
+          border: 1px solid gray;
+          border-radius: 5px;
+          z-index: 1;
+          align-items: center;
+          box-shadow: 0px 8px 24px 0px black;
+          padding-left: 10px;
+          padding-right: 10px;
+          font-size: 12px;
+        }
+
+        .bbm-call-button {
+          min-width: 40px;
+          min-height: 40px;
+          max-width: 40px;
+          max-height: 40px;
+          padding: 0px;
+          border: none;
+          outline: none;
+          cursor: pointer;
+          border-radius: 50%;
+          background-size: contain;
+          background-repeat: no-repeat;
+          background-position: center;
+        }
+
+        .bbm-call-header {
+          display: block;
+          width: 100%;
+          padding-top: 10px;
+        }
+
+        .bbm-call-header .bbm-call-button {
+          float: right;
+          background-color: rgba(0, 0, 0, .1);
+          margin-right: 5px;
+          max-width: 25px;
+          max-height: 25px;
+          min-width: 25px;
+          min-height: 25px;
+        }
+
+        .bbm-call-header .bbm-call-status {
+          float: left;
+          display:flex;
+          flex-direction:column;
+          align-self:center;
+        }
+
+        .bbm-call-header .bbm-call-label {
+          color: whitesmoke;
+          text-shadow: 0px 0px 10px #000000;
+        }
+
+        .bbm-call-body {
+          flex: auto;
+          width: 100%;
+          height: 100%;
+          align-items: center;
+        }
+
+        .bbm-call-body .bbm-call-avatar-background {
+          height: 60%;
+          width: 100%;
+          background-size: contain;
+          background-repeat: no-repeat;
+          background-position: center;
+          align-items: center;
+          text-align: center;
+          z-index: -3;
+        }
+
+        .bbm-call-body .bbm-call-avatar-background .bbm-call-avatar {
+          height: 90%;
+          border-radius: 50%;
+          align-self: center;
+          position: relative;
+          top: 50%;
+          transform: translateY(-50%);
+          border-width: 7px;
+          border-color: rgba(32, 74, 93, 50);
+          border-style: solid;
+          box-shadow: 0px 0px 24px 0px black;
+          max-width: 200px;
+          max-height: 200px;
+          -moz-user-select: none;
+          -webkit-user-select: none;
+          user-select: none;
+        }
+
+        .bbm-call-controls {
+          display: block;
+          width: 100%;
+          height: 15%;
+          text-align: center;
+          padding-bottom: 10px;
+          opacity: .9;
+        }
+
+        .bbm-call-controls:hover {
+          opacity: 1;
+        }
+
+        .bbm-call-controls .bbm-call-button {
+          margin-left: 5px;
+          margin-right: 5px;
+          background-color: rgba(0, 0, 0, 0);
+          width: 12%;
+          height: 100%;
+        }
+
+        .bbm-call-remote-video {
+          position: absolute;
+          height: 100%;
+          width: 100%;
+          padding: 0px;
+          z-index: -2;
+          border-radius: 5px;
+        }
+
+        .bbm-call-my-video {
+          position: absolute;
+          height: 20%;
+          width: 20%;
+          left: 75%;
+          top: 75%;
+          padding: 0px;
+          z-index: -1;
+        }
+
+      </style>
+      <div class="bbm-call-header">
+        <div class="bbm-call-status">
+          <label class="bbm-call-label" style="margin-bottom: 5px;">[[callPartyDisplayName]]</label>
+          <label class="bbm-call-label">[[callStatusString]]</label>
+        </div>
+        <button class="bbm-call-button"
+                style$="background-image: [[collapseExpandButtonImage]]"
+                onclick="[[onExpandCollapsedButtonClicked()]]"
+                hidden$="[[getCollapseExpandBtnHidden(isFullScreen, isResizeAllowed)]]">
+        </button>
+        <button class="bbm-call-button"
+                style$="background-image: [[fullScreenButtonImage]]"
+                onclick="[[onFullScreenButtonClicked()]]"
+                hidden$="[[getFullScreenBtnHidden(isCollapsed, isResizeAllowed)]]">
+        </button>
+      </div>
+      <div class="bbm-call-body" style$="display: [[getCallBodyDisplay(isCollapsed)]]">
+        <div class="bbm-call-avatar-background">
+          <img class="bbm-call-avatar" id="bbm-call-avatar" src$="[[callPartyAvatar]]">
+        </div>
+      </div>
+      <div class="bbm-call-controls">
+        <button class="bbm-call-button" id="video-call-button"
+                style$="background-image: [[answerCallWithVideoButtonImage]]"
+                onclick="[[answerCallWithVideoClicked()]]"
+                hidden$="[[isVideoButtonHidden]]">
+        </button>
+        <button class="bbm-call-button" id="toggle-video-button"
+                style$="background-image: [[toggleVideoButtonImage]]"
+                onclick="[[toggleVideoButtonClicked()]]"
+                hidden$="[[isToggleVideoButtonHidden]]">
+        </button>
+        <button class="bbm-call-button" id="voice-call-button"
+                style$="background-image: [[answerCallWithAudioButtonImage]]"
+                onclick="[[answerCallWithAudioClicked()]]"
+                hidden$="[[isVoiceButtonHidden]]">
+        </button>
+        <button class="bbm-call-button" id="mute-button"
+                style$="background-image: [[muteButtonImage]]"
+                onclick="[[muteButtonClicked()]]"
+                hidden$="[[isMuteButtonHidden]]">
+        </button>
+        <button class="bbm-call-button" id="call-end-button"
+                style$="background-image: [[voiceEndCallButtonImage]]"
+                onclick="[[endCallButtonClicked()]]"
+                hidden$="[[isCallEndButtonHidden]]">
+        </button>
+      </div>
+      <video id="remote_video"
+            hidden$=[[isCollapsed]]
+            class="bbm-call-remote-video"
+            autoplay></video>
+      <video id="my_video"
+            hidden$=[[isCollapsed]]
+            class="bbm-call-my-video"
+            autoplay></video>
+    </template>
+    <script type="text/javascript" src="js/bbmCall.js"></script>
+  </dom-module>
+</html>

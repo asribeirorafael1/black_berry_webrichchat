@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+
+<!--
+ Copyright (c) 2019 BlackBerry.  All Rights Reserved.
+
+ You must obtain a license from and pay any applicable license fees to
+ BlackBerry before you may reproduce, modify or distribute this
+ software, or any work that includes all or part of this software.
+
+ This file may contain contributions from others. Please review this entire
+ file for other proprietary rights or license notices.
+-->
+
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Rich Chat</title>
+    <link rel="icon" type="image/png" href="images/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="css/rich_chat_style.css" />
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,900" rel="stylesheet" type="text/css"/>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-lite.js"></script>
+
+    <!-- Load utility classes -->
+    <script src="support/util/TimeRangeFormatter.js"></script>
+    <script src="support/util/MessageFormatter.js"></script>
+    <script src="support/identity/GenericUserInfo.js"></script>
+
+    <!-- Import custom controls -->
+    <link rel="import" href="node_modules/bbmChat/bbmChat.html">
+    <link rel="import" href="node_modules/bbmCall/bbmCall.html"/>
+    <link rel="import" href="node_modules/bbmContactList/bbmContactList.html"/>
+    <link rel="import" href="node_modules/bbmChatUserPassword/bbmChatUserPassword.html"/>
+    <link rel="import" href="node_modules/bbmUserEmailDialog/bbmUserEmailDialog.html"/>
+
+    <!-- Load Spark Communications SDK -->
+    <script src="sdk/bbm_sdk_web.js"></script>
+
+    <!--
+      The scripts used by this example application to provide key protection
+      and error reporting when configured to use Cloud Key Storage.
+
+      If you are using the BlackBerry Key Management Service, these can be
+      removed.
+    -->
+    <script src="support/protect/encryption/KeyProtect.js"></script>
+    <script src="support/protect/KeyProviderError.js"></script>
+
+    <!--
+      The scripts required to use the FirebaseKeyProvider when this example
+      application is configured to use Cloud Key Storage.
+
+      If you are not using the FirebaseKeyProvider or are using the BlackBerry
+      Key Management Service, these can be removed.
+    -->
+    <script src="https://www.gstatic.com/firebasejs/5.5.8/firebase.js"></script>
+    <script src="support/protect/firebase/FirebaseKeyProvider.js"></script>
+
+    <!--
+      The scripts required to use the CosmosDbKeyProvider when this example
+      application is configured to use Cloud Key Storage.
+
+      If you are not using the CosmosDbKeyProvider or are using the BlackBerry
+      Key Management Service, this can be removed.
+    -->
+    <script src="support/protect/cosmosdb/CosmosDbKeyProvider.js"></script>
+
+    <!-- Select one of the following configurations (mutually exclusive): -->
+
+    <!-- 1. Simplified: Use below .js to configure your app to work without authentication (no identity provider) -->
+    <script src="support/auth/MockAuthManager.js"></script>
+    <script src="support/identity/MockUserManager.js"></script>
+    <script src="js/config_mock.js"></script>
+
+    <!-- 2. Google: Use below .js files to configure application to work with Google -->
+    <!--
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="../support/auth/GoogleAuthManager.js"></script>
+    <script src="../support/identity/GooglePeopleUserManager.js"></script>
+    <script src="js/config_google.js"></script>
+    -->
+
+    <!-- 3. Microsoft: Use below .js files to configure application to work with Azure -->
+    <!--
+    <script src="../support/auth/AzureAuthManager.js"></script>
+    <script src="../support/identity/AzureUserManager.js"></script>
+    <script src="js/config_azure.js"></script>
+    -->
+  </head>
+  <body>
+    <div class="header-banner">
+      <img id="headerImage" src="./images/favicon.ico">
+      <p class="header-text" id="headerText">Rich Chat</p>
+      <div class="header-buttons-div">
+        <div class="header-button-div">
+          <button class="settings-button" onclick="showSettingsClick()" id="settingsButton"></button>
+        </div>
+      </div>
+    </div>
+    <div class="main-screen" id = "mainScreen" style="display:none">
+      <div class="tab-pane">
+        <div class="chat-list-container" id="chatListContainer">
+          <div class="list-header" id="listHeader">
+            <div class="list-header-text" id="listHeaderText">Chats</div>
+            <div class="list-header-button-wrapper">
+              <button class="list-header-button" onclick="showContactsClick()" id="listHeaderButton"></button>
+            </div>
+          </div>
+          <div class="chat-list" id="chatList">
+            <div id="chatListRowPlaceholder"></div>
+          </div>
+        </div>
+        <bbm-contact-list id="bbmContactList" style="display:none;"></bbm-contact-list>
+      </div>
+      <div class="content-pane">
+        <div class="file-send-drag-drop-overlay" id="fileSendDragDropOverlay" ondrop="onFileSendDropHandler(event)" ondragover="onFileSendDragoverHandler(event)" ondragleave="onFileSendDragendHandler(event)" hidden>
+          <div class="file-send-drag-drop-overlay-text">Drop to send files to the participants</div>
+        </div>
+        <bbm-chat class="conversation-pane" id="conversationPane"></bbm-chat>
+        <div class="placeholder-wrapper" id="contentPanePlaceHolder">
+          <div class="placeholder-img-wrapper">
+            <img id="contentPanePlaceHolderImg">
+          </div>
+          <p id="contentPanePlaceHolderText"></p>
+        </div>
+      </div>
+    </div>
+    <div class="login-pane" id="loginPane" >
+      <p class="login-header">
+        <img class="login-img" src="./images/favicon.ico" width="40" height="40">
+        Rich Chat
+      </p>
+      <p class="login-body">
+        A sample web app using the Spark Communications SDK for JavaScript.
+      </p>
+      <div class="login-status" id="loginStatus"></div>
+      <div id="loginBtnDiv" class="login">
+        <center><button id="signInButton" class="login-btn">SIGN IN</button></center>
+      </div>
+    </div>
+    <div class="settings-pane" id="settingsPane" style="display:none">
+      <p id="userName">Display Name:</p>
+      <p id="email">Email:</p>
+      <p id="domain">Domain:</p>
+      <p id="registrationState">Registration State:</p>
+      <p id="localRegId">Local RegID:</p>
+      <p id="localPIN">Local PIN:</p>
+      <div class="settings-pane-btn-div">
+        <button id="logoutBtn" onclick="logoutClick()">Sign Out</button>
+        <button onclick="closeSettingsClick()">Close Settings</button>
+      </div>
+    </div>
+    <script src="js/rich_chat_script.js"></script>
+  </body>
+</html>

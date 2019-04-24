@@ -1,0 +1,453 @@
+
+<!DOCTYPE html>
+
+<!--
+ Copyright (c) 2019 BlackBerry.  All Rights Reserved.
+
+ You must obtain a license from and pay any applicable license fees to
+ BlackBerry before you may reproduce, modify or distribute this
+ software, or any work that includes all or part of this software.
+
+ This file may contain contributions from others. Please review this entire
+ file for other proprietary rights or license notices.
+-->
+<html>
+  <link rel="import" href="../@npm-polymer/polymer/polymer.html">
+  <dom-module id="bbm-contact-list">
+    <template>
+      <style>
+        :host {
+          display: flex;
+          flex-direction: column;
+          flex-flow: column nowrap;
+          height: 100%;
+          width: 100%;
+          font-size: 16px;
+          font-family: Lato, sans-serif;
+        }
+
+        /* Header style */
+
+        .bbm-contact-list-header {
+          font: inherit;
+          min-height: 40px;
+          width: 100%;
+          background: #f5f5f5;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: left;
+        }
+
+        .bbm-contact-list-header label {
+          color: #087099;
+          padding-left: 10px;
+          font-weight: 600;
+          flex: auto;
+        }
+
+        .bbm-contact-list-header .sync-contacts-image-button {
+          cursor: pointer;
+          min-width: 20px;
+          min-height: 20px;
+          background-size: cover;
+          background-repeat: no-repeat;
+          background-image: url("img/sync.svg");
+        }
+
+        .bbm-contact-list-header .sync-contacts-image-button:hover {
+          opacity: .6;
+        }
+
+        .bbm-contact-list-header .add-contact-image-button {
+          cursor: pointer;
+          min-width: 20px;
+          min-height: 20px;
+          background-size: cover;
+          background-repeat: no-repeat;
+          background-image: url("img/add_contact.png");
+        }
+
+        .bbm-contact-list-header .add-contact-image-button:hover {
+          opacity: .6;
+        }
+
+        .bbm-contact-list-header .cancel-image-button {
+          cursor: pointer;
+          min-width: 25px;
+          min-height: 25px;
+          background-size: cover;
+          background-repeat: no-repeat;
+          background-image: url("img/close.png");
+        }
+
+        .bbm-contact-list-header .cancel-image-button:hover {
+          opacity: .6;
+        }
+
+        /* Participants list style */
+
+        .bbm-participants-pane {
+          border-bottom: 1px solid #dddddd;
+        }
+
+        .bbm-chat-participant {
+          min-height: 20px;
+          float:left;
+          background: #e1ecef;
+          border-radius: 10px;
+          margin: 2px;
+          padding: 1px 10px 1px 10px;
+          display: flex;
+          align-items: center;
+          font-size: 12px;
+          color:#087099;
+          cursor: pointer;
+          opacity: 1;
+          border: 1px solid #e1ecef
+        }
+
+        .bbm-chat-participant:hover {
+          border: 1px solid #087099 !important;
+        }
+
+        .bbm-chat-participant label {
+          margin-left: 5px;
+          max-width: 100px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          cursor: inherit;
+        }
+
+        .bbm-chat-participant img {
+          margin-left: 10px;
+          width: 20px;
+          height: 20px;
+        }
+
+        /* Contact list style */
+
+        .bbm-contact-list-body {
+          font: inherit;
+          flex: auto;
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
+
+        .bbm-contact-list-body .contact-list-container {
+          flex-direction: column;
+          display: flex;
+          flex: auto;
+        }
+
+        .bbm-contact-list-body .contact-container {
+          display: flex;
+          align-items: center;
+          justify-content: left;
+          opacity: 1;
+          min-height: 40px;
+          padding: 10px;
+        }
+
+        .bbm-contact-list-body .contact-container:hover {
+          background: #e1ecef;
+          cursor: pointer;
+        }
+
+        .bbm-contact-list-body .contact-container:hover .menu-toggle {
+          display: block;
+        }
+
+        .bbm-contact-list-body .contact-container img {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+        }
+
+        .bbm-contact-list-body .contact-container label {
+          color: #000000;
+          cursor: inherit;
+          margin-left: 10px;
+          max-width: calc(100% - 80px);
+          max-width: -webkit-calc(100% - 80px);
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+
+        .bbm-contact-list-body .contact-container .menu-toggle {
+          height: 20px;
+          width: 20px;
+          background-image: url("img/toggle_menu.png");
+          background-repeat: no-repeat;
+          background-size: cover;
+          left: calc(100% - 30px);
+          left: -webkit-calc(100% - 30px);
+          display: none;
+          position: sticky;
+        }
+
+        .bbm-contact-list-body .contact-container .menu-toggle:hover {
+          background-image: url("img/toggle_menu_hover.png");
+        }
+
+        .no-contacts-container {
+          display: flex;
+          flex-direction: column;
+          text-align: center;
+          align-items: center;
+          color: #087099
+        }
+
+        .no-contacts-container img {
+          max-width: 50%;
+        }
+
+        .dropdown-menu {
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          background: white;
+          position: absolute;
+          border-radius: 5px;
+          border: 1px solid #96c5d8;
+          box-shadow: 0px 8px 24px 0px black;
+          z-index: 1;
+        }
+
+        .dropdown-menu-item {
+          min-width: 60px;
+          border: none;
+          outline: none;
+          padding: 15px;
+          color: #087099;
+          background-color: white;
+          font-size: 12px;
+          font-family: Lato, sans-serif;
+          border-radius: 0px;
+          cursor: pointer;
+        }
+
+        .dropdown-menu-item:hover {
+          background-color: #e1ecef;
+        }
+
+        .add-contact-dialog {
+          position: absolute;
+          display: flex;
+          flex-direction: column;
+          min-width: 250px;
+          min-height: 80px;
+          overflow: hidden;
+          background: white;
+          border-radius: 5px;
+          border: 1px solid #96c5d8;
+          box-shadow: 0px 8px 24px 0px black;
+          z-index: 1;
+          padding: 10px;
+          font-size: 16px;
+          font-family: Lato, sans-serif;
+        }
+
+        .add-contact-dialog label {
+          padding: 5px;
+          margin-bottom: 15px;
+          font: inherit;
+          font-weight: bold;
+          color: #087099;
+        }
+
+        .add-contact-dialog input {
+          margin: 5px;
+          margin-top: 10px;
+          min-height: 20px;
+          border-top: none;
+          border-right: none;
+          border-left: none;
+          border-bottom: 1px solid #087099;
+          padding: 5px;
+          outline: none !important;
+          font: inherit;
+        }
+
+        .add-contact-dialog input:focus {
+          border-bottom: 2px solid #087099;
+        }
+
+        .add-contact-dialog div {
+          margin-top: 40px;
+          display: flex;
+          flex-direction: row;
+          align-self: flex-end;
+          font: inherit;
+        }
+
+        .add-contact-dialog button {
+          background: #087099;
+          color: antiquewhite;
+          border: none;
+          font-size: 14px;
+          margin: 5px;
+          height: 30px;
+          cursor: pointer;
+          width: 100px;
+          border-radius: 2px;
+        }
+
+        .add-contact-dialog button:disabled {
+          background: grey;
+        }
+
+        /* Chat properties style */
+
+        .bbm-chat-properties {
+          display: flex;
+          flex-direction: column;
+          min-height: 60px;
+          border-top: 1px solid #dddddd;
+          background: #f5f5f5;
+        }
+
+        .bbm-chat-properties input[type="text"] {
+          border: 1px solid #087099;
+          border-radius: 5px;
+          font-size: 14px;
+          padding-left: 10px;
+          padding-right: 10px;
+          padding-top: 5px;
+          padding-bottom: 5px;
+          margin: 5px;
+          width: calc(100% - 35px);
+          width: -webkit-calc(100% - 35px);
+        }
+
+        .bbm-chat-properties input[type="text"]:focus {
+          outline: none !important;
+          box-shadow: 0 0 5px #087099;
+        }
+
+        .bbm-chat-properties .chat-options-container {
+          padding-left: 5px;
+          display: flex;
+          align-items: center;
+          justify-content: left;
+          font-size: 14px;
+          color: #087099;
+        }
+
+        .bbm-chat-properties .chat-options-container label {
+          margin-left: 5px;
+        }
+
+        /* Footer style */
+
+        .bbm-contact-list-footer {
+          font: inherit;
+          min-height: 50px;
+          width: 100%;
+          background: #f5f5f5;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .bbm-contact-list-footer button {
+          background: #087099;
+          color: antiquewhite;
+          border: none;
+          font-size: 14px;
+          margin: 5px;
+          height: 30px;
+          cursor: pointer;
+          width: 100px;
+          border-radius: 2px;
+        }
+
+        .bbm-contact-list-footer button:disabled {
+          background: grey;
+        }
+      </style>
+      <div class="bbm-contact-list-header">
+        <label>[[headerText]]</label>
+        <div id="syncContactsButton"
+             class="sync-contacts-image-button"
+             on-click="_onSyncContactsClicked"
+             style$="display:[[_showIfTrue(contactManager.syncUsers)]];"></div>
+        <div class="add-contact-image-button" on-click="_onAddContactClicked"
+             style$="display:[[_showIfTrue(contactManager.addUser)]]"></div>
+        <div class="cancel-image-button" on-click="_onCancelClicked"></div>
+      </div>
+      <div class="bbm-contact-list-body">
+        <div class="bbm-participants-pane">
+          <template is="dom-repeat" items="[[selectedContacts]]" id="participantList">
+            <div class="bbm-chat-participant" on-click="_toggleParticipantSelection">
+              <label>[[item.displayName]]</label>
+              <img src="[[closeImagePath]]" alt="Remove"/>
+            </div>
+          </template>
+        </div>
+        <div class="no-contacts-container" style$="display:[[_showIfTrue(isEmpty)]]">
+          <img src='[[noContactsImage]]'/>
+          <label>No contacts available.</label>
+        </div>
+        <div class="contact-list-container">
+          <template is="dom-repeat" items="[[contactList]]" id="contactList" mutable-data>
+            <div class="contact-container" on-click="_toggleContactSelection"
+                 style$="display:[[_hideIfTrue(item.selected)]];"
+                 title="[[_getItemTooltip(item)]]">
+              <img style$="opacity:[[_getItemOpacity(item)]];" src="[[item.avatarUrl]]"/>
+              <label style$="opacity:[[_getItemOpacity(item)]];">[[item.displayName]]</label>
+              <template is="dom-if" if="[[contactManager.deleteUser]]">
+                <div class="menu-toggle" title="" on-click="_toggleMenuDisplay"></div>
+              </template>
+            </div>
+          </template>
+          <array-selector
+            id="selector"
+            items="{{contactList}}"
+            selected="{{selectedContacts}}"
+            multi toggle>
+          </array-selector>
+        </div>
+      </div>
+      <div class="bbm-chat-properties"
+           style$="display:[[_showIfTrue(isMultiChat)]]">
+        <input id="chatNameInput"
+               type="text" value="{{chatName::input}}"
+               placeholder="Enter chat name"/>
+        <div class="chat-options-container">
+          <input type="checkbox" value="{{isAllowInvites:input}}"/>
+          <label>Allow participants to invite others</label>
+        </div>
+      </div>
+      <div class="bbm-contact-list-footer">
+        <button on-click="_onCancelClicked">
+          Cancel
+        </button>
+        <button disabled$="[[isOkDisabled]]" on-click="_onOkClicked">
+          Ok
+        </button>
+      </div>
+      <div id="dropdownMenu" class="dropdown-menu" style$="display:[[_showIfTrue(isDisplayMenu)]]">
+        <div class="dropdown-menu-item" on-click="_onDeleteContact"
+             style$="display:[[_showIfTrue(contactManager.deleteUser)]]">
+             Delete
+        </div>
+      </div>
+      <div id="addContactDialog" class="add-contact-dialog" style$="display:[[_showIfTrue(isDisplayAddContact)]]">
+        <label>Add contact</label>
+        <input id="addContactDialogEmail" onkeydown="[[_onAddContactKeyDown()]]" type="email" value="{{newContactEmail::input}}" placeholder="[[newContactEmailPlaceholder]]"/>
+        <input id="addContactDialogName" onkeydown="[[_onAddContactKeyDown()]]" type="text" value="{{newContactName::input}}" placeholder="Name (optional)"/>
+        <div>
+          <button on-click="_onAddContactDialogCancel">Cancel</button>
+          <button on-click="_onAddContactDialogAdd" disabled$="[[isAddContactDisabled]]">Add</button>
+        </div>
+      </div>
+    </template>
+    <script type="text/javascript" src="js/bbmContactList.js"></script>
+  </dom-module>
+</html>

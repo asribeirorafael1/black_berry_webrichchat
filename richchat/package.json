@@ -1,0 +1,14 @@
+{
+  "name": "RichChat",
+  "version": "1.0.0",
+  "description": "The RichChat application is an in-depth & feature rich example that shows how to use the BlackBerry Spark Communications Services SDK",
+  "main": "index.html",
+  "dependencies": {
+    "@webcomponents/webcomponentsjs": "^1.0.20",
+    "bbmChat": "file:../support/ui/widgets/bbmChat",
+    "bbmChatUserPassword": "file:../support/ui/widgets/bbmChatUserPassword",
+    "bbmCall": "file:../support/ui/widgets/bbmCall",
+    "bbmContactList": "file:../support/ui/widgets/bbmContactList",
+    "bbmUserEmailDialog": "file:../support/ui/widgets/bbmUserEmailDialog"
+  }
+}

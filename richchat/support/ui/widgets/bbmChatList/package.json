@@ -1,0 +1,17 @@
+{
+  "name": "bbm-chat-list",
+  "version": "1.1004000.6",
+  "description": "Displays the chats for a client",
+  "license": "",
+  "files": [
+    "bbmChatList.html",
+    "js/"
+  ],
+  "main": "bbmChatList.html",
+  "dependencies": {
+    "@webcomponents/webcomponentsjs": "^1.0.20",
+    "@npm-polymer": "https://github.com/Polymer/polymer.git#2.2.0",
+    "@npm-polymer/iron-list": "https://github.com/PolymerElements/iron-list.git#2.0.12",
+    "@npm-polymer/shadycss": "https://github.com/webcomponents/shadycss.git#1.1.0"
+  }
+}

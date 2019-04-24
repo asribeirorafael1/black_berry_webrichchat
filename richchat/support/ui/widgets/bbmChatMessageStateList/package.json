@@ -1,0 +1,17 @@
+{
+  "name": "bbm-chat-message-state-list",
+  "version": "1.1004000.6",
+  "description": "Displays a list of message states for a chat message",
+  "license": "",
+  "files": [
+    "bbmChatMessageStateList.html",
+    "img/",
+    "js/"
+  ],
+  "main": "bbmChatMessageStateList.html",
+  "dependencies": {
+    "@webcomponents/webcomponentsjs": "^1.0.20",
+    "@npm-polymer": "https://github.com/Polymer/polymer.git#2.2.0",
+    "@npm-polymer/shadycss": "https://github.com/webcomponents/shadycss.git#1.1.0"
+  }
+}
