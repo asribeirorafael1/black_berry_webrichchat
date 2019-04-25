@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+
+<!--
+ Copyright (c) 2019 BlackBerry.  All Rights Reserved.
+
+ You must obtain a license from and pay any applicable license fees to
+ BlackBerry before you may reproduce, modify or distribute this
+ software, or any work that includes all or part of this software.
+
+ This file may contain contributions from others. Please review this entire
+ file for other proprietary rights or license notices.
+-->
+<html>
+  <link rel="import" href="../@npm-polymer/polymer/polymer.html">
+  <dom-module id="bbm-user-email-dialog">
+    <template>
+      <style>
+        :host {
+          position: absolute;
+          display: flex;
+          flex-direction: column;
+          min-width: 300px;
+          min-height: 80px;
+          overflow: hidden;
+          background: white;
+          border-radius: 5px;
+          border: 1px solid #96c5d8;
+          box-shadow: 0px 8px 24px 0px black;
+          z-index: 1;
+          padding: 10px;
+          font-size: 16px;
+          font-family: Lato, sans-serif;
+          left: calc(50% - 40px);
+          left: -webkit-calc(50% - 150px);
+          top: calc(50% - 40px);
+          top: -webkit-calc(50% - 150px);
+        }
+
+        :host label {
+          padding: 5px;
+          margin-bottom: 15px;
+          font: inherit;
+          font-weight: bold;
+          color: #087099;
+        }
+
+        :host input {
+          margin: 5px;
+          margin-top: 10px;
+          min-height: 20px;
+          border-top: none;
+          border-right: none;
+          border-left: none;
+          border-bottom: 2px solid #087099;
+          padding: 5px;
+          outline: none !important;
+          font: inherit;
+        }
+
+        :host div {
+          margin-top: 40px;
+          display: flex;
+          flex-direction: row;
+          align-self: flex-end;
+          font: inherit;
+        }
+
+        :host button {
+          background: #087099;
+          color: antiquewhite;
+          border: none;
+          font-size: 14px;
+          margin: 5px;
+          height: 30px;
+          cursor: pointer;
+          width: 100px;
+          border-radius: 2px;
+        }
+
+        :host button:disabled {
+          background: grey;
+        }
+
+      </style>
+      <label>Enter your user ID</label>
+      <input id="userEmail" type="email" value="{{userEmail::input}}" placeholder="UserId"/>
+      <div>
+        <button on-click="_onUserEmailDialogCancel">Cancel</button>
+        <button on-click="_onUserEmailDialogOk" disabled$="[[isOkDisabled]]">Ok</button>
+      </div>
+    </template>
+    <script type="text/javascript" src="js/bbmUserEmailDialog.js"></script>
+  </dom-module>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "bbm-chat-user-password",
+  "version": "1.1004000.6",
+  "description": "Allows user to input password.",
+  "license": "",
+  "files": [
+    "bbmChatUserPassword.html",
+    "js/"
+  ],
+  "main": "bbmChatUserPassword.html",
+  "dependencies": {
+    "@webcomponents/webcomponentsjs": "^1.0.20",
+    "@npm-polymer": "https://github.com/Polymer/polymer.git#2.2.0",
+    "@npm-polymer/shadycss": "https://github.com/webcomponents/shadycss.git#1.1.0"
+  }
+}

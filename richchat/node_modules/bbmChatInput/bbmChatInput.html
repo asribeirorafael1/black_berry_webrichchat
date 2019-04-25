@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<!--
+ Copyright (c) 2019 BlackBerry.  All Rights Reserved.
+
+ You must obtain a license from and pay any applicable license fees to
+ BlackBerry before you may reproduce, modify or distribute this
+ software, or any work that includes all or part of this software.
+
+ This file may contain contributions from others. Please review this entire
+ file for other proprietary rights or license notices.
+-->
+
+<html>
+<link rel="import" href="../@npm-polymer/polymer/polymer.html"/>
+<dom-module id="bbm-chat-input">
+  <template>
+    <style>
+
+      /* Modify this CSS according to application needs */
+
+      .bbmChatInputControl {
+        height: auto;
+        width: 100%;
+        display: grid;
+        align-items: center;
+      }
+
+      /* File preview section */
+
+      .bbmChatInputControl .bbmFileWrapper {
+        display: flex;
+        height: 30px;
+        width: 100%;
+        align-items: center;
+        border-top: 1px solid #96c5d8;
+      }
+
+      .bbmFileWrapper .bbmFileIcon {
+        height: 25px;
+        text-align: left;
+      }
+
+      .bbmFileWrapper .bbmFileName {
+        text-align: left;
+        float: left;
+        width: 100%;
+        font-style: italic;
+        font-size: 14px;
+        color: #688996;
+        margin-left: 20px;
+      }
+
+      .bbmFileWrapper .bbmFileSize {
+        width: 150px;
+        font-style: italic;
+        font-size: 14px;
+        color: #688996;
+        text-align: right;
+        margin-right: 10px;
+      }
+
+      .bbmFileWrapper .bbmAttachCancelButton {
+        height: 25px;
+        width: 25px;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        background: none;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+      }
+
+      /* Message reference section */
+      .bbmChatInputControl .bbmMessageRefWrapper {
+        display: flex;
+        height: 30px;
+        width: 100%;
+        align-items: center;
+        border-top: 1px solid #96c5d8;
+      }
+
+      .bbmMessageRefWrapper .bbmRefTargetContent {
+        text-align: left;
+        float: left;
+        width: 100%;
+        font-style: italic;
+        font-size: 14px;
+        color: #688996;
+      }
+
+      .bbmMessageRefWrapper .bbmRefCancelButton {
+        height: 25px;
+        width: 25px;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        background: none;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+      }
+
+      /* Input section */
+
+      .bbmChatInputControl .bbmChatInputWrapper {
+        height: 50px;
+        max-height: 50px;
+        width: 100%;
+        display: flex;
+        overflow: hidden;
+        border-top: 1px solid #96c5d8;
+        align-items: center;
+      }
+
+      .bbmChatInputWrapper .bbmInput {
+        padding-top: 15px;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+        width: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+        user-select: text;
+        line-height: 18px;
+        font-size: 15px;
+        border: none;
+        outline: none;
+        resize: none;
+        font-family: Lato, sans-serif;
+      }
+
+      .bbmChatInputWrapper .bbmAttachFileButton {
+        width: 40px;
+        height: 40px;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        background: none;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        margin-right: 10px;
+        float: right;
+      }
+
+      .bbmChatInputWrapper .bbmPriorityButton {
+        width: 40px;
+        height: 40px;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        background: none;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        margin-right: 10px;
+        float: right;
+      }
+
+      .bbmChatInputWrapper .bbmSendButton {
+        width: 40px;
+        height: 40px;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        background: none;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        float: right;
+      }
+
+      .bbmFileUpload {
+        display: flex;
+      }
+
+      #bbmInputFile {
+        display: none;
+        height: 0px;
+      }
+    </style>
+    <div class="bbmChatInputControl">
+      <div class="bbmFileWrapper" id="bbmFileWrapper" style$="display:[[getFileDisplay(previewFile, uploads)]]">
+        <template is="dom-repeat" items="{{uploads}}">
+          <div class="bbmFileUpload">
+            <img class="bbmFileIcon" src="[[previewFileImage]]">
+            <label class="bbmFileName">[[item.fileName]]</label>
+            <label class="bbmFileSize">[[item.fileSize]]</label>
+            <progress value="[[item.uploadedBytes]]" max="[[item.totalBytes]]"></progress>
+          </div>
+        </template>
+        <div class="bbmFileWrapper" style$="display:[[getPreviewDisplay(previewFile)]]">
+          <img class="bbmFileIcon" src="[[previewFileImage]]">
+          <label class="bbmFileName">[[getPreviewFileName(previewFile)]]</label>
+          <label class="bbmFileSize">[[getPreviewFileSize(previewFile)]]</label>
+          <button class="bbmAttachCancelButton"
+            style$="background-image: url('[[previewCancelButton]]');"
+            onmouseover="[[backgroundFlipper()]]"
+            onmouseout="[[backgroundFlipper()]]"
+            onclick="[[cancelPreview()]]">
+          </button>
+        </div>
+      </div>
+      <div class="bbmMessageRefWrapper" style$="display:[[getRefDisplay(refTag)]]">
+        <label class="bbmRefTargetContent">[[refContent]]</label>
+        <button class="bbmRefCancelButton"
+          style$="background-image: url('[[refCancelButton]]');"
+          onmouseover="[[backgroundFlipper()]]"
+          onmouseout="[[backgroundFlipper()]]"
+          onclick="[[cancelRef()]]">
+        </button>
+      </div>
+      <div class="bbmChatInputWrapper">
+        <textarea class="bbmInput"
+          placeholder="[[getInputPlaceholder(chat)]]"
+          readonly$=[[isChatDefunct(chat)]]
+          onkeydown="[[inputKeyDown()]]"
+          style$="color:[[getInputTextColor(isPriorityMessage)]];"
+          value="{{textMessage::input}}">
+        </textarea>
+        <button class="bbmAttachFileButton"
+          onmouseover="[[backgroundFlipper()]]"
+          onmouseout="[[backgroundFlipper()]]"
+          onclick="[[attachButtonClick()]]"
+          style$="background-image: url('[[attachButtonImage]]');"
+          disabled$="[[isChatDefunct(chat)]]">
+        </button>
+        <button class="bbmPriorityButton"
+          onmouseover="[[backgroundFlipper()]]"
+          onmouseout="[[backgroundFlipper()]]"
+          onclick="[[priorityButtonClick()]]"
+          style$="background-image: url('[[getPriorityButtonBackground(isPriorityMessage)]]'); display:[[getPriorityButtonDisplay(previewFile,refTag,isPriorityEnabled)]];"
+          disabled$="[[isChatDefunct(chat)]]">
+        </button>
+        <button class="bbmSendButton"
+          onmouseover="[[backgroundFlipper()]]"
+          onmouseout="[[backgroundFlipper()]]"
+          onmousedown="[[backgroundFlipper()]]"
+          onmouseup="[[backgroundFlipper()]]"
+          onclick="[[sendButtonClick()]]"
+          style$="background-image: url('[[sendButtonImage]]');"
+          disabled$="[[computeSendButtonDisabled(chat, previewFile, textMessage)]]">
+        </button>
+      </div>
+    </div>
+    <input id="bbmInputFile" type="file" multiple
+      onchange="[[onInputFileChange()]]"/>
+  </template>
+  <script type="text/javascript" src="../util/MessageFormatter.js"></script>
+  <script type="text/javascript" src="js/bbmChatInput.js"></script>
+</dom-module>
+</html>

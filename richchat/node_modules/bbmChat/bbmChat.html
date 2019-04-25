@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+<!--
+ Copyright (c) 2019 BlackBerry.  All Rights Reserved.
+
+ You must obtain a license from and pay any applicable license fees to
+ BlackBerry before you may reproduce, modify or distribute this
+ software, or any work that includes all or part of this software.
+
+ This file may contain contributions from others. Please review this entire
+ file for other proprietary rights or license notices.
+-->
+
+<html>
+  <link rel="import" href="../@npm-polymer/polymer/polymer.html">
+  <link rel="import" href="../bbmChatHeader/bbmChatHeader.html"/>
+  <link rel="import" href="../bbmRichChatMessageList/bbmRichChatMessageList.html"/>
+  <link rel="import" href="../bbmChatTypingNotification/bbmChatTypingNotification.html"/>
+  <link rel="import" href="../bbmChatInput/bbmChatInput.html"/>
+  <dom-module id="bbm-chat">
+    <template>
+      <style>
+
+        .bbmChat {
+          display: flex;
+          flex-direction: column;
+          flex-flow: column nowrap;
+          height: 100%;
+          width: 100%;
+          background-color: white;
+        }
+
+        .bbmChat #message-list {
+          flex: auto;
+          overflow: auto;
+          width: 100%;
+        }
+
+        .bbmChat #input {
+          margin: 0px 5px 0px 5px;
+        }
+
+        #message-list {
+          margin: 10px 0px 10px 0px;
+        }
+
+      </style>
+      <div class="bbmChat">
+        <bbm-chat-header id="header"></bbm-chat-header>
+        <bbm-rich-chat-message-list id="message-list"></bbm-rich-chat-message-list>
+        <bbm-chat-typing-notification id="typing-notification"></bbm-chat-typing-notification>
+        <bbm-chat-input id="input"></bbm-chat-input>
+      </div>
+    </template>
+    <script type="text/javascript" src="js/bbmChat.js"></script>
+  </dom-module>
+</html>

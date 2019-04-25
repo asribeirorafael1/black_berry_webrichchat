@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<!--
+ Copyright (c) 2019 BlackBerry.  All Rights Reserved.
+
+ You must obtain a license from and pay any applicable license fees to
+ BlackBerry before you may reproduce, modify or distribute this
+ software, or any work that includes all or part of this software.
+
+ This file may contain contributions from others. Please review this entire
+ file for other proprietary rights or license notices.
+-->
+
+<html>
+  <link rel="import" href="../@npm-polymer/polymer/polymer.html"/>
+  <dom-module id="bbm-chat-header">
+    <template>
+      <style>
+        .bbmChatHeaderContainer {
+          background: #f5f5f5;
+          width: 100%;
+        }
+
+        .bbmChatHeader {
+          width: 100%;
+          height: 40px;
+          float: left;
+          display: flex;
+          align-items: center;
+        }
+
+        .bbmChatHeader .bbmChatImage {
+          height: 25px;
+          width: 25px;
+          border-radius: 50%;
+          margin: 0px 5px 0px 5px;
+        }
+
+        .bbmChatHeader .bbmChatCaption {
+          color:#087099;
+          font-weight: bold;
+        }
+
+        .bbmChatHeader .bbmShowParticipants {
+          text-align: left;
+          border: 0px;
+          outline: 0px;
+          background: none;
+          cursor: pointer;
+          padding-left: 0px;
+          color:#087099;
+        }
+
+        .bbmChatHeader .bbmShowParticipants:hover {
+          color:#1098ca;
+        }
+
+        .bbmChatButtons {
+          width: auto;
+          height: 40px;
+          display: flex;
+          float: right;
+          align-items: center;
+        }
+
+        .bbmChatButtons .bbmActionButton {
+          height: 27px;
+          width: 27px;
+          outline: none;
+          border: none;
+          background-color: none;
+          background-repeat: none;
+          background-size: 100% 100%;
+          margin-right: 12px;
+          cursor: pointer;
+        }
+
+        .bbmParticipantsPane {
+          display: flex;
+          max-height: 46px;
+          height: auto;
+          overflow-y: auto;
+          background: white;
+          border-bottom: 1px solid #dddddd;
+          padding: 10px 10px 10px 10px;
+        }
+
+        .bbmChatParticipant {
+          min-height: 20px;
+          float:left;
+          background: #e1ecef;
+          border-radius: 10px;
+          margin: 2px;
+          padding: 1px 10px 1px 10px;
+          display: flex;
+          align-items: center;
+          font-size: 12px;
+          color:#087099;
+        }
+
+        .bbmChatParticipantName {
+          margin-left: 5px;
+        }
+
+        .bbmChatHeaderDropdown {
+          display: none;
+          overflow: hidden;
+          background: white; 
+          position: absolute;
+          border-radius: 5px;
+          border: 1px solid #96c5d8;
+          box-shadow: 0px 8px 24px 0px black;
+          z-index: 1;
+        }
+
+        .bbmChatMenuButton {
+          min-width: 50px;
+          height: 40px;
+          border: none;
+          outline: none;
+          padding: 10px;
+          color: #087099;
+          background-color: white;
+          font-size: 12px;
+          border-radius: 0px;
+        }
+
+        .bbmChatMenuButton:hover {
+          background-color: #e1ecef;
+        }
+
+        .bbmChatHeaderMenuExpander {
+          background-repeat: no-repeat;
+          background-size: 100% 100%;
+          height: 15px;
+          width: 15px;
+          margin-left: 5px;
+          cursor: pointer;
+        }
+
+        .bbmPendingParticipantImage {
+          animation: rotation 2s 7 linear;
+          -webkit-animation: rotation 2s 7 linear;
+          height: 15px;
+          width: 15px;
+        }
+
+        @keyframes rotation {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(359deg); }
+        }
+
+        @-webkit-keyframes rotation {
+          from { -webkit-transform: rotate(0deg); }
+          to { -webkit-transform: rotate(359deg); }
+        }
+      </style>
+
+      <table class="bbmChatHeaderContainer" cellpadding="0" border="0" align="center" cellspacing="0">
+        <tr>
+          <td>
+            <div class="bbmChatHeader">
+              <img class="bbmChatImage" src="[[chatImage]]">
+              <div style="display:grid; margin-left:20px;">
+                <label class="bbmChatCaption">[[subject]]</label>
+                <button class="bbmShowParticipants" hidden$="[[isOneToOne]]">[[getParticipantsString(participants)]]</button>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="bbmChatButtons" onclick="[[toggleMenuShow()]]">
+              <div class="bbmActionButton bbmVideoCallButton"
+                onclick=[[makeVideoCall()]]
+                hidden$="[[getVideoCallHidden(isHasVideo, isMediaEnabled, isOneToOne)]]"
+                style$="background-image: url('[[videoCallImage]]');"
+                onmouseover=[[backgroundFlipper()]]
+                onmouseout=[[backgroundFlipper()]]>
+              </div>
+              <div class="bbmActionButton bbmVoiceCallButton"
+                onclick=[[makeAudioCall()]]
+                hidden$="[[getAudioCallHidden(isHasAudio, isMediaEnabled, isOneToOne)]]"
+                style$="background-image: url('[[voiceCallImage]]');"
+                onmouseover=[[backgroundFlipper()]]
+                onmouseout=[[backgroundFlipper()]]>
+              </div>
+              <div class="bbmActionButton bbmOptionsMenuButton"
+                style$="background-image: url('[[optionsMenuImage]]');"
+                onmouseover=[[backgroundFlipper()]]
+                onmouseout=[[backgroundFlipper()]]>
+                <div class="bbmChatHeaderDropdown" style="margin-left:-70px">
+                  <button class="bbmChatMenuButton" onclick=[[inviteOthers()]] hidden$="[[isOneToOne]]">Invite Others</button>
+                  <button class="bbmChatMenuButton" onclick=[[leaveChat()]]>Leave Chat</button>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr style="background: white">
+          <td colspan="2">
+            <div class="bbmParticipantsPane">
+              <template is="dom-repeat" items="[[participants]]">
+                <div class="bbmChatParticipant">
+                  <img src="[[adminKeyImage]]" hidden$="[[!isAdmin(item)]]"/>
+                  <img src="[[pendingParticipantImage]]" class="bbmPendingParticipantImage" hidden$="[[!isPending(item)]]"/>
+                  <label class="bbmChatParticipantName">[[getParticipantName(item)]]</label>
+                  <div class="bbmChatHeaderMenuExpander"
+                        style$="background-image: url('[[expanderImage]]');"
+                        onclick="[[toggleMenuShow()]]"
+                        onmouseover=[[backgroundFlipper()]]
+                        onmouseout=[[backgroundFlipper()]]
+                        hidden$=[[!isSelfAdmin]]>
+                    <div class="bbmChatHeaderDropdown">
+                      <button class="bbmChatMenuButton" hidden$="[[isAdmin(item)]]" onclick="[[addAsAdministrator(item)]]">Add Administrator</button>
+                      <button class="bbmChatMenuButton" hidden$="[[!isAdmin(item)]]" onclick="[[removeAsAdministrator(item)]]">Remove As Administrator</button>
+                      <button class="bbmChatMenuButton" hidden$="[[isLocalUser(item)]]" onclick="[[removeChatParticipant(item)]]">Remove Chat Participant</button>
+                      <button class="bbmChatMenuButton" hidden$="[[!isPending(item)]]" onclick="[[retryAddToChat(item)]]">Retry</button>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </template>
+    <script type="text/javascript" src="js/bbmChatHeader.js"></script>
+  </dom-module>
+</html>

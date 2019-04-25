@@ -1,0 +1,19 @@
+{
+  "name": "bbm-chat",
+  "version": "1.1004000.6",
+  "description": "Displays a chat widget",
+  "license": "",
+  "files": [
+    "bbmChat.html",
+    "js/"
+  ],
+  "main": "bbmChat.html",
+  "dependencies": {
+    "@npm-polymer": "https://github.com/Polymer/polymer.git#2.2.0",
+    "@webcomponents/webcomponentsjs": "^1.0.20",
+    "bbmChatHeader": "file:../bbmChatHeader",
+    "bbmRichChatMessageList": "file:../bbmRichChatMessageList",
+    "bbmChatTypingNotification": "file:../bbmChatTypingNotification",
+    "bbmChatInput": "file:../bbmChatInput"
+  }
+}

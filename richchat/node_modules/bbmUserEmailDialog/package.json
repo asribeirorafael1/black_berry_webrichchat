@@ -1,0 +1,16 @@
+{
+  "name": "bbm-user-email-dialog",
+  "version": "1.1004000.6",
+  "description": "Allows user to enter user email",
+  "license": "",
+  "files": [
+    "bbmUserEmailDialog.html",
+    "js/"
+  ],
+  "main": "bbmUserEmailDialog.html",
+  "dependencies": {
+    "@webcomponents/webcomponentsjs": "^1.0.20",
+    "@npm-polymer": "https://github.com/Polymer/polymer.git#2.2.0",
+    "@npm-polymer/shadycss": "https://github.com/webcomponents/shadycss.git#1.1.0"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "bbm-contact-list",
+  "version": "1.1004000.6",
+  "description": "Allows user to browse contacts.",
+  "license": "",
+  "files": [
+    "bbmContactList.html",
+    "img/",
+    "js/"
+  ],
+  "main": "bbmContactList.html",
+  "dependencies": {
+    "@webcomponents/webcomponentsjs": "^1.0.20",
+    "@npm-polymer": "https://github.com/Polymer/polymer.git#2.2.0",
+    "@npm-polymer/shadycss": "https://github.com/webcomponents/shadycss.git#1.1.0"
+  }
+}
